@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  doc_ng:
+    image: nginx:1.22.0-alpine
+    container_name: doc_ng
+    networks:
+      - doc_net
+    ports:
+      - 10000:80
+    volumes:
+      - ./config/ng/conf.d/:/etc/nginx/conf.d/
+      - ./config/ng/nginx.conf:/etc/nginx/nginx.conf
+      - ./log/ng/:/var/log/nginx/
+      - ./data/ng/:/usr/share/nginx/ng/
+      - ./data/cscart/:/usr/share/nginx/cscart/
+  doc_godoc:
+#   image: golang:latest
+    build:
+      context: ./config/godoc/
+      dockerfile: Dockerfile
+    container_name: doc_godoc
+    networks:
+      - doc_net
+    ports:
+      - 10001:80
+#    volumes:
+#      - ${GOPATH}:/go/src/
+#    working_dir: /go/src/
+  doc_docker:
+    image: docs/docker.github.io:latest
+    container_name: doc_docker
+    networks:
+      - doc_net
+    ports:
+      - 10002:4000
+networks:
+  doc_net:
+    name: doc_net
+
+
+#undefined:
+#- nginx
+#- mariadb
+#- php
